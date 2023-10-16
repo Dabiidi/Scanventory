@@ -36,6 +36,8 @@ import {
   UploadbuttonContainer,
   UploadButton,
   TextUploadImage,
+  PickerContainerIOS,
+  ClassificationIOS,
 } from "./InventoryDetailStyle";
 import { useMutation, useQueryClient } from "@tanstack/react-query";
 
@@ -51,6 +53,7 @@ import {
   useGetItems,
 } from "../../services/ItemsAPI";
 import { AntDesign } from "@expo/vector-icons";
+import ModalPicker from "react-native-modal-selector";
 type Items = {
   _id: string;
   name: string;
@@ -83,6 +86,7 @@ const InventoryDetail: React.FC<Props> = ({ route }: Props) => {
   const [editableField, setEditableField] = useState<string | null>(null);
   const [changesMade, setChangesMade] = useState<string>();
   const queryClient = useQueryClient();
+  const [selectedClassification, setSelectedClassification] =useState<string | null>(null)
 
   const { isLoading, mutateAsync: mutateLogs } = saveLogs();
   const { data: DataInvent } = useGetItems();
@@ -322,6 +326,12 @@ const InventoryDetail: React.FC<Props> = ({ route }: Props) => {
       }
     );
   };
+  const handleSelection = (option : any) => {
+    console.log("gasfsa", option)
+    setSelectedClassification(option.label);
+    handleInputChange("classification", option.label);
+    // Do something with the selected option
+  };
 
   React.useEffect(() => {
     const matchingItem = DataInvent.find(
@@ -452,37 +462,29 @@ const InventoryDetail: React.FC<Props> = ({ route }: Props) => {
           </DescContainer>
           {Platform.OS === "ios" ? (
             <ClassificationContainer>
-              <Classification >Classification: </Classification>
+              <ClassificationIOS>Classification: </ClassificationIOS>
 
               {editMode ? (
-                <PickerContainer>
-                  <Picker
-                    selectedValue={editedInventory.classification}
-                    mode={Picker.MODE_DROPDOWN}
-                    onValueChange={(value) =>
-                      handleInputChange("classification", value)
-                    }
-                    style={{
-                      color: "#fff",
+                <PickerContainerIOS>
+                  <ModalPicker
+                    scrollEnabled
+                    animationType="fade"
+                    data={classificationOptions.map((option) => ({
+                      key: option,
+                      label: option,
+                    }))}
+                    initValue={selectedClassification || editedInventory.classification}
+                    onChange={(option) => {
+                      handleSelection(option)
                     }}
-                  >
-                    <Picker.Item
-                    
-                      label="Select Classification"
-                      value={null}
-                      color="#fff"
-                    />
-                    {classificationOptions.map((option, index) => (
-                      <Picker.Item
-                        color="#fff"
-                   
-                        key={index}
-                        label={option}
-                        value={option}
-                      />
-                    ))}
-                  </Picker>
-                </PickerContainer>
+                    cancelText="Cancel" // Set the default cancel text here
+                    optionTextStyle={{ color: "black" }} // Style for the options
+                    sectionTextStyle={{ color: "gray" }} // Style for the section titles (if you have sections)
+                    cancelTextStyle={{ color: "red", fontWeight: "bold" }} // Style for the cancel button text
+                    overlayStyle={{ backgroundColor: "rgba(0,0,0,0.7)" }} // Style for the overlay
+                  />
+                  
+                </PickerContainerIOS>
               ) : (
                 <Classification
                   onPress={() => {
@@ -503,6 +505,7 @@ const InventoryDetail: React.FC<Props> = ({ route }: Props) => {
                     selectedValue={editedInventory.classification}
                     onValueChange={(value) =>
                       handleInputChange("classification", value)
+
                     }
                     style={{
                       color: "#fff",

@@ -11,10 +11,10 @@ import {
   SearchContainer,
   SearchInput,
 } from "./InventoryStyle";
-
 import { Picker } from "@react-native-picker/picker";
 import { useGetItems } from "../../services/ItemsAPI";
 import { EvilIcons } from "@expo/vector-icons";
+import ModalPicker from 'react-native-modal-selector';
 
 const InventoryList = ({}) => {
   const navigation = useNavigation();
@@ -101,36 +101,29 @@ const InventoryList = ({}) => {
           onChangeText={(text) => searchFilterFunction(text)}
           value={search}
         />
+
         <EvilIcons name="search" size={50} color="black" />
       </SearchContainer>
       {Platform.OS === "ios" ? (
         <PickerContainer>
-          <Picker
-            selectedValue={selectedClassification}
-            onValueChange={(itemValue) => {
-              setSelectedClassification(itemValue);
-              setInventories(masterDataSource);
-              applyClassificationFilter(itemValue);
-            }}
-            style={{
-              color: "#fff",
-            }}
-          >
-            <Picker.Item
-              label="Select Classification Filter"
-              color="#fff"
-              value={null}      
-            />
-            {classificationOptions.map((option) => (
-              <Picker.Item
-                key={option}
-                label={option}
-                color="#fff"
-        
-                value={option}
-              />
-            ))}
-          </Picker>
+          <ModalPicker  
+          scrollEnabled
+           animationType="fade"
+           
+  data={classificationOptions.map(option => ({ key: option, label: option }))}
+  initValue="Select Classification Filter"
+  onChange={(option) => {
+  
+    setSelectedClassification(option.key);
+    setInventories(masterDataSource);
+    applyClassificationFilter(option.key);
+  }}
+  cancelText="Cancel" // Set the default cancel text here
+  optionTextStyle={{ color: 'black' }} // Style for the options
+  sectionTextStyle={{ color: 'gray' }} // Style for the section titles (if you have sections)
+  cancelTextStyle={{ color: 'red', fontWeight: 'bold' }} // Style for the cancel button text
+  overlayStyle={{ backgroundColor: 'rgba(0,0,0,0.7)' }} // Style for the overlay
+/>
         </PickerContainer>
       ) : (
         <PickerContainer>
