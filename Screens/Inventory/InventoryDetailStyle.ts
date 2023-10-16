@@ -54,9 +54,20 @@ export const UploadbuttonContainer = styled.View`
 `;
 export const PickerContainer = styled.View`
   width: 50%;
-  padding: 5px;
+
+  height: 50px;
   justify-content: center;
   flex: 1;
+
+  color: #fff;
+`;
+export const PickerContainerIOS = styled.View`
+  width: 50%;
+
+  height: 80px;
+  justify-content: center;
+  flex: 1;
+  padding-bottom: 30px;
   color: #fff;
 `;
 
@@ -103,7 +114,12 @@ export const Desc = styled.Text`
 
 export const Classification = styled.Text`
   font-size: 16px;
-  margin-top: 5px;
+  margin-top: 15px;
+  color: #fff;
+`;
+export const ClassificationIOS = styled.Text`
+  font-size: 16px;
+  margin-top: 15px;
   color: #fff;
 `;
 
@@ -147,7 +163,7 @@ export const DescContainer = styled.View`
 `;
 
 export const ClassificationContainer = styled.View`
-  height: 30px;
+  height: 40px;
   background-color: #12486b;
   flex-direction: row;
   margin-bottom: 10px;

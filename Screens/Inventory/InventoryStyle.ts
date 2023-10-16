@@ -23,9 +23,9 @@ export const SearchContainer = styled.View`
 `;
 
 export const PickerContainer = styled.View`
-  padding: 10px;
+  padding: 5px;
   justify-content: center;
-  height: 50px;
+
   margin-bottom: 5px;
   background-color: #12486b;
   border-radius: 10px;
