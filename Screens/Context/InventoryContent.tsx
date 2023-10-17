@@ -1,4 +1,4 @@
-import { View, Text, ActivityIndicator } from "react-native";
+import { View, Text, ActivityIndicator, StyleSheet } from "react-native";
 import React, { useState } from "react";
 
 import { useGetItems } from "../../services/ItemsAPI";
@@ -51,18 +51,19 @@ const InventoryContent: React.FC<InventoryProviderProp> = ({ children }) => {
 
   if (GetItemData.isLoading && GetItemData.isRefetching)
     return (
-      <>
-        <View
-          style={{
-            flex: 1,
-            justifyContent: "center",
-            alignItems: "center",
-          }}
-        >
-          <ActivityIndicator size="large" color="#00ff00" />
-          <Text style={{ textAlign: "center" }}> Loading...</Text>
-        </View>
-      </>
+
+       <View
+                style={{
+                  ...StyleSheet.absoluteFillObject, // Takes the full screen
+                  backgroundColor: "rgba(255, 255, 255, 0.9)", // Semi-transparent white background
+                  justifyContent: "center",
+                  alignItems: "center",
+                  zIndex: 999, // Ensures it's in the foreground
+                }}
+              >
+            <ActivityIndicator size="large" color="#0000ff" />
+          </View>
+  
     );
 
   if (GetItemData.error) return <Text> Error gathering data.</Text>;

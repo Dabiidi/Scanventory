@@ -1,4 +1,4 @@
-import { View, Text } from "react-native";
+import { View, Text, ImageBackground  } from "react-native";
 import React from "react";
 import {
   Container,
@@ -10,6 +10,7 @@ import {
 import { MaterialCommunityIcons } from "@expo/vector-icons";
 
 import { useNavigation } from "@react-navigation/native";
+import { BackgroundImage } from "../Profile/ProfileStyle";
 
 const QRDashboard = () => {
   const navigation = useNavigation();
@@ -47,6 +48,7 @@ const QRDashboard = () => {
         </ButtonScan>
       </ShadowContainer>
     </Container>
+  
   );
 };
 

@@ -32,22 +32,24 @@ export const Texts = styled.Text`
 export const Textbody = styled.Text`
   font-size: 30px;
   font-weight: 500;
+  margin-top: 10px;
   color: white;
 `;
 export const Input = styled.TextInput`
-  border-bottom-width: 2px;
-  border-bottom-color: black;
+  margin-top: 5px;
   font-size: 15px;
-  color: #fff;
+  height: 30px;
+  padding-left:5px;
+  border-radius: 5px;
+  background-color: #fff;
   width: 80%;
-  margin-top: 20px;
 `;
 
 export const ButtonContainer = styled.View`
   width: 100%;
   padding: 20px;
   align-items: center;
-  margin-top: 15px;
+
 `;
 export const SubmitButton = styled.TouchableOpacity`
   background-color: #0A2647;
@@ -64,45 +66,71 @@ export const ButtonText = styled.Text`
 `;
 
 export const PickerContainer = styled.View`
-  width: 90%;
-  margin-left: 5px;
-  margin-top: 10px;
+  width: 80%;
+  border-radius: 10px;
   justify-content: center;
+  left: 3px;
+  height: 40px;
+  margin-top: 10px;
+  background-color: #fff;
+
 `;
 
 export const InputQuantity = styled.TextInput`
-  border-bottom-width: 2px;
-  border-bottom-color: black;
+  height: 30px;
+  padding-left: 5px;
   font-size: 15px;
+  border-radius: 5px;
+  color: #000;
 
-  color: #fff;
-  text-align: center;
-  width: 30%;
 `;
 
-export const QuantText = styled.Text`
-  font-size: 15px;
-  color: #fff;
+export const InputTexts = styled.Text`
+color: #fff;
+align-self: flex-start;
+padding-left: 37px;
+font-size: 20px;
+`
+export const QuantText = styled.View`
+
+  height: 25px;
+  width: 1px;
+  background-color: black;
+  
+
+ 
 `;
 
 export const QuantityContainer = styled.View`
   flex-direction: row;
   align-items: center;
-  justify-content: space-between;
+  justify-content:flex-end;
+  justify-content:space-between;
   background-color: transparent;
-  margin-top: 20px;
+  margin-bottom: 20px;
+  background-color: #fff;
+  border-radius: 5px;
+    margin-top: 5px;
   width: 80%;
 `;
 
-export const ButtonIncrement = styled.TouchableOpacity``;
+export const ButtonIncrement = styled.TouchableOpacity`
+align-self: flex-end;
+justify-self: flex-end;
 
-export const ButtonDecrement = styled.TouchableOpacity``;
+`;
+
+export const ButtonDecrement = styled.TouchableOpacity`
+align-self: flex-end;
+
+justify-self: flex-end;`;
+
 
 export const QuantityContainer1 = styled.View`
   flex-direction: row;
   align-items: center;
-
-  justify-content: center;
+  background-color: transparent;
+  justify-self: flex-end;
   width: 30%;
   justify-content: space-between;
 `;
