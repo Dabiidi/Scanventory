@@ -1,4 +1,4 @@
-import { View, Text, FlatList, ScrollView } from "react-native";
+import { View, Text, FlatList, StyleSheet, ActivityIndicator } from "react-native";
 import React from "react";
 import { useInventory } from "../Context/InventoryContent";
 import InventoryComponent from "../Inventory/Inventory";
@@ -17,7 +17,8 @@ import {
 import { MaterialCommunityIcons } from "@expo/vector-icons";
 const ShipItems = () => {
   const navigation = useNavigation();
-  const { inventories, setInventories } = useInventory();
+  const { inventories } = useInventory();
+  const [loading, setLoading] = React.useState(false);
 
   const navigateToScreen = (inventory: any) => {
     navigation.navigate("ShipItemDetails", { inventory });
@@ -34,13 +35,32 @@ const ShipItems = () => {
   const filterInventory = (inventory: any) => {
     return inventory.filter((inv: any) => inv.quantity > 0);
   };
+  React.useEffect(() => {
+    setLoading(true);
 
+    const loadingTimeout = setTimeout(() => {
+      setLoading(false);
+    }, 1000); 
+
+    return () => clearTimeout(loadingTimeout);
+
+  }, [ inventories])
   return (
     <>
       <Container>
- 
-
-
+      {loading && (
+                <View
+                style={{
+                  ...StyleSheet.absoluteFillObject, // Takes the full screen
+                  backgroundColor: "rgba(255, 255, 255, 0.9)", // Semi-transparent white background
+                  justifyContent: "center",
+                  alignItems: "center",
+                  zIndex: 999, // Ensures it's in the foreground
+                }}
+              >
+            <ActivityIndicator size="large" color="#0000ff" />
+          </View>
+        )}
         <ButtonContainer>
           <ShipLogs>
             <ShadowBoxContainer>

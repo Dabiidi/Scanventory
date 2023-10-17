@@ -28,6 +28,7 @@ import {
   QuantityContainer1,
   Textbody,
   BoxShadowView,
+  InputTexts,
 } from "../AddItem/AddStyle";
 import { useNavigation } from "@react-navigation/native";
 import { Picker } from "@react-native-picker/picker";
@@ -37,11 +38,12 @@ import {
   saveLogs,
 } from "../../services/ItemsAPI";
 import { AntDesign } from "@expo/vector-icons";
+import { ClassPicker } from "../components/ClassificationPicker";
 
 const AddItemScreen = () => {
   const [name, setName] = React.useState<string>("");
   const [quantity, setQuantity] = React.useState<number>(0);
-  const [price, setPrice] = React.useState<number>(0);
+  const [price, setPrice] = React.useState<number>(0.00);
   const [desc, setDesc] = React.useState<string>("");
   const navigation = useNavigation();
   const [classification, setClassification] = React.useState<string | null>(
@@ -101,9 +103,31 @@ const AddItemScreen = () => {
     }
   };
 
+  const formatter = (text: any) => {
+    const formattedPrice = parseFloat(text.replace(/[^0-9.]/g, "")).toFixed(2);
+    console.log(formattedPrice);
+    setPrice(parseFloat(formattedPrice));
+  };
+  
   const handleCancel = () => {
-    // Alert.alert("Cancel", "Cancel Adding Item");
+    if (name || quantity || price || desc || classification) {
+      Alert.alert(
+        "Cancel Adding Item Inventory",
+        "Are you sure you want to cancel adding?",
+        [
+          {
+            text: "Yes",
+            onPress: () => navigation.goBack(),
+          },
+          {
+            text: "No",
+            style: "cancel",
+          },
+        ]
+      );
 
+      return;
+    }
     navigation.goBack();
   };
 
@@ -120,6 +144,7 @@ const AddItemScreen = () => {
       setQuantity(count - 1);
     }
   };
+
   React.useEffect(() => {
     if (!isLoading) {
       setLoadingSubmit(false);
@@ -132,6 +157,11 @@ const AddItemScreen = () => {
     "Accessories",
     "Balls",
   ];
+  const handleClassificationChange = (
+    selectedClassification: string | null
+  ) => {
+    setClassification(selectedClassification);
+  };
 
   return (
     <Container>
@@ -162,6 +192,7 @@ const AddItemScreen = () => {
         <BoxShadowView>
           <Textbody>Item Details </Textbody>
           <Body>
+            <InputTexts>Name</InputTexts>
             <Input
               placeholder="Item Name"
               placeholderTextColor={"white"}
@@ -170,33 +201,17 @@ const AddItemScreen = () => {
               value={name}
             />
 
-            <QuantityContainer>
-              <QuantText>Quantity:</QuantText>
-              <QuantityContainer1>
-                <ButtonDecrement onPress={handleClickDecrimentQuant}>
-                  <AntDesign name="minus" size={30} color="black" />
-                </ButtonDecrement>
-                <InputQuantity
-                  placeholder="0"
-                  placeholderTextColor={"white"}
-                  onChangeText={(text) => setQuantity(parseInt(text))}
-                  value={quantity ? quantity.toString() : ""}
-                  keyboardType="numeric"
-                  inputMode="numeric"
-                />
-                <ButtonIncrement onPress={handleClickIncrementQuant}>
-                  <AntDesign name="plus" size={30} color="black" />
-                </ButtonIncrement>
-              </QuantityContainer1>
-            </QuantityContainer>
-
+            <InputTexts>Price</InputTexts>
             <Input
               placeholder="Price"
-              placeholderTextColor={"white"}
-              onChangeText={(text) => setPrice(parseFloat(text))}
+              placeholderTextColor={"black"}
+              onChangeText={(text) => {
+                formatter(text);
+              }}
               value={price ? price.toString() : ""}
               keyboardType="numeric"
             />
+            <InputTexts>Description</InputTexts>
             <Input
               placeholder="Description"
               placeholderTextColor={"white"}
@@ -204,50 +219,84 @@ const AddItemScreen = () => {
               onChangeText={(text) => setDesc(text)}
               value={desc}
             />
+            <InputTexts>Quantity</InputTexts>
+            <QuantityContainer>
+              <InputQuantity
+                placeholder="0"
+                placeholderTextColor={"black"}
+                onChangeText={(text) => setQuantity(parseInt(text))}
+                value={quantity ? quantity.toString() : ""}
+                keyboardType="numeric"
+                inputMode="numeric"
+              />
+              <QuantityContainer1>
+                <ButtonDecrement onPress={handleClickDecrimentQuant}>
+                  <AntDesign name="minus" size={30} color="black" />
+                </ButtonDecrement>
+                <QuantText />
+                <ButtonIncrement onPress={handleClickIncrementQuant}>
+                  <AntDesign name="plus" size={30} color="black" />
+                </ButtonIncrement>
+              </QuantityContainer1>
+            </QuantityContainer>
           </Body>
-          {Platform.OS === "ios" ? (
-            <PickerContainer>
-              <Text style={{ color:"#fff" , left:"5%" , fontSize:20}}>Classification</Text>
-              <Picker
-                selectedValue={classification}
-                onValueChange={(itemValue) => setClassification(itemValue)}
-                style={{ color: "#fff",top:"5%"}}
-              >
-                <Picker.Item
-                  label="Select Classification"
-                  color="#fff"
-                  
-                  value={null}
-                  style={{ backgroundColor: "white" }}
-                  
-                />
 
-                {classificationOptions.map((option, index) => (
-                  <Picker.Item
-                  
-                    color="#fff"
-                    key={index}
-                    label={option}
-                    value={option}
-                  />
-                ))}
-              </Picker>
-            </PickerContainer>
-          ) : (
-            <PickerContainer>
-              <Picker
-                selectedValue={classification}
-                onValueChange={(itemValue) => setClassification(itemValue)}
+          {Platform.OS === "ios" ? (
+            <>
+              <Text
                 style={{
                   color: "#fff",
+                  fontSize: 20,
+                  left: "10%",
+                  alignSelf: "flex-start",
+                  marginBottom: 15,
                 }}
               >
-                <Picker.Item label="Select Classification" value={null} />
-                {classificationOptions.map((option, index) => (
-                  <Picker.Item key={index} label={option} value={option} />
-                ))}
-              </Picker>
-            </PickerContainer>
+                Classification
+              </Text>
+              <View
+                style={{
+                  width: "80%",
+                  padding: 10,
+                  borderColor: "#fff",
+                  borderRadius: 10,
+                  borderWidth: 1,
+                  justifyContent: "center",
+                  alignItems: "center",
+                }}
+              >
+                <ClassPicker
+                  onClassificationChange={handleClassificationChange}
+                />
+              </View>
+            </>
+          ) : (
+            <>
+              <Text
+                style={{
+                  color: "#fff",
+                  fontSize: 20,
+                  left: "10%",
+                  alignSelf: "flex-start",
+                }}
+              >
+                Classification
+              </Text>
+              <PickerContainer>
+                <Picker
+                  selectedValue={classification}
+                  onValueChange={(itemValue) => setClassification(itemValue)}
+                  style={{
+                    color: "#000",
+                  }}
+                >
+                  <Picker.Item label="Select Classification" value={null} />
+                  {classificationOptions.map((option, index) => (
+                    <Picker.Item key={index} label={option} value={option} />
+                  ))}
+                </Picker>
+              </PickerContainer>
+            </>
           )}
 
           <ButtonContainer>

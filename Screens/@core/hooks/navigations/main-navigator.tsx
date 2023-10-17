@@ -112,10 +112,11 @@ export function MainNavigator() {
         component={ScantoSearch}
         options={{
           title: "Scan to Search",
+          
           headerLeft: () => <BackButton/>,
           headerBackVisible: false,
           headerTintColor: "white",
-          headerTitleAlign: "center",
+          headerTitleAlign:"center",
           headerShown: true,
           headerTitleStyle: {
             fontWeight: "bold",
@@ -279,7 +280,7 @@ export function TabNavigator() {
         name="Inventory List"
         component={InventoryList}
         options={{
-          
+          headerTitleAlign:"left",
           headerStyle: {
             backgroundColor: "#12486B",
           },
@@ -303,12 +304,12 @@ export function TabNavigator() {
           headerTitleStyle: {
             fontWeight: "bold",
           },
-
+          headerTitleAlign:"left",
           tabBarIcon: ({ color, size }) => (
             <MaterialCommunityIcons
               name="qrcode-scan"
-              size={24}
-              color="black"
+              size={size}
+              color={color}
             />
           ),
         }}
@@ -329,8 +330,8 @@ export function TabNavigator() {
           tabBarIcon: ({ color, size }) => (
             <MaterialCommunityIcons
               name="account-circle-outline"
-              size={24}
-              color="black"
+              size={size}
+              color={color}
             />
           ),
         }}

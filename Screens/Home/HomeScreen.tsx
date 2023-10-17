@@ -3,7 +3,7 @@ import {
   Modal,
   ScrollView,
   Text,
-  TouchableHighlight,
+  StyleSheet,
   View,
   BackHandler,
  
@@ -43,7 +43,8 @@ import { useInventory } from "../Context/InventoryContent";
 import { AntDesign, Ionicons, MaterialIcons, Octicons } from "@expo/vector-icons";
 import { StatusBar } from 'expo-status-bar';
 import { useGetShipping } from "../../services/shippingAPI";
-import { Badge } from "react-native-elements";
+
+import { ActivityIndicator } from "react-native-paper";
 type DashboardScreenRouteParams = {
   email: string;
 };
@@ -59,9 +60,8 @@ const HomeScreen: React.FC = () => {
   const navigation = useNavigation();
   const [noStock, useNoStock] = React.useState(0);
   const [haveStock, useHaveStock] = React.useState(0);
-  const [shipItems, shipItemsCount] = React.useState(0);
   const { inventoryCount } = useInventory();
-
+  const [loading, setLoading] = React.useState(false);
   const [infoModalVisible, setInfoModalVisible] = React.useState(false);
   const [totalInventoryModalVisible, setInventoryModalVisible] =
     React.useState(false);
@@ -92,6 +92,13 @@ const HomeScreen: React.FC = () => {
   );
 
   React.useEffect(() => {
+
+
+
+      setLoading(true);
+
+
+
     const filteredInventoryNoStock = inventoryCount.filter(
       (inv) => inv.quantity === 0
     );
@@ -101,7 +108,12 @@ const HomeScreen: React.FC = () => {
       (inv) => inv.quantity > 0
     );
     useHaveStock(filteredInventoryhaveStock.length);
+    
+    const loadingTimeout = setTimeout(() => {
+      setLoading(false);
+    }, 1000); 
 
+    return () => clearTimeout(loadingTimeout);
 
   }, [inventoryCount]);
 
@@ -137,20 +149,6 @@ const HomeScreen: React.FC = () => {
     });
   };
 
-  const countItemsByClassification = () => {
-    const classificationCounts: Record<string, number> = {};
-
-    inventoryCount.forEach((item) => {
-      const { classification } = item;
-      if (classificationCounts[classification]) {
-        classificationCounts[classification]++;
-      } else {
-        classificationCounts[classification] = 1;
-      }
-    });
-
-    return classificationCounts;
-  };
 
   const { data, isLoading, isError } = useGetShipping();
 
@@ -189,6 +187,20 @@ const HomeScreen: React.FC = () => {
   return (
     <Container>
       <ScrollView contentContainerStyle={{ flexGrow: 1 }}>
+      {loading && (
+                <View
+                style={{
+                  ...StyleSheet.absoluteFillObject, // Takes the full screen
+                  backgroundColor: "rgba(255, 255, 255, 0.9)", // Semi-transparent white background
+                  justifyContent: "center",
+                  alignItems: "center",
+                  zIndex: 999, // Ensures it's in the foreground
+                }}
+              >
+            <ActivityIndicator size="large" color="#0000ff" />
+          </View>
+        )}
+
         <StatusBar style="dark" />
         <Header>
        
@@ -217,7 +229,7 @@ const HomeScreen: React.FC = () => {
             </BoxShadowView>
           </BackgroundImage>
         </Header>
-        
+      
         <Body>
           <AddContainer>
             <AddButton onPress={navigateToAdd}>
@@ -231,6 +243,18 @@ const HomeScreen: React.FC = () => {
             <ButtonText>Add Item</ButtonText>
           </AddContainer>
 
+          <ShipContaier>
+            <ShipButton onPress={navigateToShip}>
+              <Octicons
+                style={{ alignSelf: "center" }}
+                name="package-dependents"
+                size={70}
+                color="#26577c"
+              />
+            </ShipButton>
+            <ButtonShip>Ship Item</ButtonShip>
+          </ShipContaier>
+          
           <ReportContainer>
             <ReportButton onPress={navigateToReport}>
               <Octicons
@@ -243,17 +267,6 @@ const HomeScreen: React.FC = () => {
             <ButtonText>Reports</ButtonText>
           </ReportContainer>
 
-          <ShipContaier>
-            <ShipButton onPress={navigateToShip}>
-              <Octicons
-                style={{ alignSelf: "center" }}
-                name="package-dependents"
-                size={70}
-                color="#26577c"
-              />
-            </ShipButton>
-            <ButtonShip>Ship Item</ButtonShip>
-          </ShipContaier>
         </Body>
 
         <Greetings>Summary</Greetings>

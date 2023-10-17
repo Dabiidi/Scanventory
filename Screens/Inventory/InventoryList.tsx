@@ -1,4 +1,11 @@
-import { View, Text, FlatList, Alert, Platform } from "react-native";
+import {
+  View,
+  Text,
+  FlatList,
+  StyleSheet,
+  Platform,
+  ActivityIndicator,
+} from "react-native";
 import React, { useEffect } from "react";
 import styled from "styled-components/native";
 import InventoryComponent from "../Inventory/Inventory";
@@ -14,19 +21,24 @@ import {
 import { Picker } from "@react-native-picker/picker";
 import { useGetItems } from "../../services/ItemsAPI";
 import { EvilIcons } from "@expo/vector-icons";
-import ModalPicker from 'react-native-modal-selector';
+import ModalPicker from "react-native-modal-selector";
 
 const InventoryList = ({}) => {
   const navigation = useNavigation();
   const { inventories, setInventories, masterInventory } = useInventory();
   const [search, setSearch] = React.useState(""); // Search data
   const [masterDataSource, setMasterDataSource] = React.useState([]); // All data
+  const [loading, setLoading] = React.useState(false);
+  const [initValue, setInitValue] = React.useState(
+    "Select Classification Filter"
+  ); // State for initValue
 
   const [selectedClassification, setSelectedClassification] = React.useState<
     string | null
   >(null);
 
   const classificationOptions = [
+
     "School Supplies",
     "Hardware",
     "Accessories",
@@ -80,19 +92,65 @@ const InventoryList = ({}) => {
 
   const GetItemData = useGetItems();
 
+  const filterChoice = (text: string) => {
+    if (text) {
+      setInitValue(text);
+    } else {
+      setInitValue("Select Filter");
+    }
+  };
   React.useEffect(() => {
+    setLoading(true);
     if (GetItemData.data && !GetItemData.isLoading) {
       setInventories(GetItemData.data);
       setMasterDataSource(GetItemData.data);
       GetItemData.refetch();
     }
+    const loadingTimeout = setTimeout(() => {
+      setLoading(false);
+    }, 1000);
+
+    return () => clearTimeout(loadingTimeout);
   }, [GetItemData.isLoading, GetItemData.data, GetItemData.refetch]);
 
-  if (GetItemData.isLoading) return <Text> Loading data</Text>;
+  if (GetItemData.isLoading)
+    return (
+      <View
+        style={{
+          ...StyleSheet.absoluteFillObject, // Takes the full screen
+          backgroundColor: "rgba(255, 255, 255, 0.9)", // Semi-transparent white background
+          justifyContent: "center",
+          alignItems: "center",
+          zIndex: 999, // Ensures it's in the foreground
+        }}
+      >
+        <ActivityIndicator size="large" color="#0000ff" />
+      </View>
+    );
+
+    const handleCancel = () => {
+      // Handle cancel logic here
+      console.log("Canceled");
+  
+    };
+  
   if (GetItemData.error) return <Text> Error data</Text>;
   //<AntDesign name="search1" size={40} color="black" style={{ left: 8 }} />
   return (
     <Container>
+      {loading && (
+        <View
+          style={{
+            ...StyleSheet.absoluteFillObject, // Takes the full screen
+            backgroundColor: "rgba(255, 255, 255, 0.9)", // Semi-transparent white background
+            justifyContent: "center",
+            alignItems: "center",
+            zIndex: 999, // Ensures it's in the foreground
+          }}
+        >
+          <ActivityIndicator size="large" color="#0000ff" />
+        </View>
+      )}
       <SearchContainer>
         <SearchInput
           autoCapitalize="none"
@@ -106,24 +164,30 @@ const InventoryList = ({}) => {
       </SearchContainer>
       {Platform.OS === "ios" ? (
         <PickerContainer>
-          <ModalPicker  
-          scrollEnabled
-           animationType="fade"
-           
-  data={classificationOptions.map(option => ({ key: option, label: option }))}
-  initValue="Select Classification Filter"
-  onChange={(option) => {
-  
-    setSelectedClassification(option.key);
-    setInventories(masterDataSource);
-    applyClassificationFilter(option.key);
-  }}
-  cancelText="Cancel" // Set the default cancel text here
-  optionTextStyle={{ color: 'black' }} // Style for the options
-  sectionTextStyle={{ color: 'gray' }} // Style for the section titles (if you have sections)
-  cancelTextStyle={{ color: 'red', fontWeight: 'bold' }} // Style for the cancel button text
-  overlayStyle={{ backgroundColor: 'rgba(0,0,0,0.7)' }} // Style for the overlay
-/>
+          <ModalPicker
+            scrollEnabled
+            animationType="fade"
+            data={classificationOptions.map((option) => ({
+              key: option,
+              label: option,
+            }))}
+            initValue={initValue}
+            onChange={(option) => {
+              
+              filterChoice(option.key);
+              setSelectedClassification(option.key);
+              setInventories(masterDataSource);
+              applyClassificationFilter(option.key);
+               // text field
+            }}
+          
+            initValueTextStyle={{ color: "white" }}
+     
+            cancelText="Cancel" // Set the default cancel text here
+            optionTextStyle={{ color: "black" }} // Style for the options
+            cancelTextStyle={{ color: "red", fontWeight: "bold" }} // Style for the cancel button text
+            overlayStyle={{ backgroundColor: "rgba(0,0,0,0.7)" }} // Style for the overlay
+          />
         </PickerContainer>
       ) : (
         <PickerContainer>

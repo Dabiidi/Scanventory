@@ -176,7 +176,7 @@ app.get("/inventoryapp/itemlist", async (req, res) => {
     }
 
     const inventoryItems = await InventoryItem.find(query).sort({
-      name: "desc",
+      createdAt: "descending",
     });
 
     inventoryItemSchema.push(inventoryItems);

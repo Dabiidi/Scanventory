@@ -13,7 +13,6 @@ export const Headertext = styled.Text`
 export const HeaderContainer = styled.View`
   justify-content: center;
   margin-top: 30px;
-
   align-items: center;
 `;
 
@@ -60,11 +59,11 @@ export const BarcodeBox = styled.View`
   width: 300px;
   overflow: hidden;
   border-radius: 30px;
-  background-color: tomato;
+  background-color: transparent;
 `;
 
 export const StyledBarCodeScanner = styled(BarCodeScanner)`
-  width: 300px;
+  width: 400px;
   height: 400px;
 `;
 export const Texts = styled.Text`

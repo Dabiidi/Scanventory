@@ -6,7 +6,7 @@ export const Container = styled.View`
 `;
 export const HeaderContainer = styled.View`
   justify-content: center;
-  margin-top: 50px;
+  margin-top: 30px;
   align-items: center;
 `;
 export const ScanAgainButton = styled.TouchableOpacity`
@@ -23,20 +23,18 @@ export const TextStyle = styled.Text`
   font-size: 25px;
   font-weight: 800;
 `;
-
 export const BarcodeBox = styled.View`
   height: 300px;
   width: 300px;
   overflow: hidden;
   border-radius: 30px;
-  background-color: tomato;
+  background-color: transparent;
 `;
 
 export const StyledBarCodeScanner = styled(BarCodeScanner)`
-  width: 300px;
+  width: 400px;
   height: 400px;
 `;
-
 export const Texts = styled.Text`
   color: #000;
   font-size: 18px;

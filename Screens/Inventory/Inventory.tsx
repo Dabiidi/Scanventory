@@ -30,7 +30,7 @@ const InventoryComponent = ({ item, onPress }: MyProps) => {
       <Container>
         <Name>Item Name: {name}</Name>
         <InfoText>Quantity: {quantity}</InfoText>
-        <InfoText>Price: ₱{price}</InfoText>
+        <InfoText>Price: ₱{price.toFixed(2)}</InfoText>
         <InfoText>Description: {desc}</InfoText>
         <InfoText>Classification: {classification}</InfoText>
       </Container>

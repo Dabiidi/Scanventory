@@ -149,13 +149,7 @@ const ShipItemDetails: React.FC<{
     }
   };
 
-  // const setQuantityCountIncrement = () => {
 
-  // };
-
-  // const setQuantityCountIncrement = () => {
-  //
-  // };
 
   const submitItem = async () => {
     const quantitySelected = quantityToShip;
