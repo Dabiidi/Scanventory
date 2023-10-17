@@ -506,6 +506,9 @@ const InventoryDetail: React.FC<Props> = ({ route }: Props) => {
                     onValueChange={(value) =>
                       handleInputChange("classification", value)
 
+
+
+                      
                     }
                     style={{
                       color: "#fff",
