@@ -8,7 +8,6 @@ import styled from "styled-components/native";
 import moment from "moment";
 import { Calendar, LocaleConfig } from "react-native-calendars";
 import { AntDesign } from "@expo/vector-icons";
-import { filter } from "lodash";
 
 interface ShippingItem {
   _id: string;
@@ -19,14 +18,26 @@ interface ShippingItem {
   createdAt: string;
 }
 
+interface DeleteItemsPayload {
+  ids: string[];
+}
+
 const ShipLogs = () => {
   const [selected, setSelected] = React.useState("");
   const [showCalendar, setShowCalendar] = React.useState(false);
+  const [defaultDate, setDefaultDate] = React.  useState(""); // Search data
 
   const [search, setSearch] = React.useState(""); // Search data
   const { data: shipItems, isLoading, isError } = useGetShipping();
-  const [itemLogsFilter, setItemLogsFilter] = React.useState();
-  const { data, isError: Errorship, mutateAsync } = useDeleteShippingLogs();
+  const [itemLogsFilter, setItemLogsFilter] = React.useState<ShippingItem[]>(
+    []
+  );
+  const {
+    data,
+    isError: Errorship,
+    mutateAsync,
+  } = useDeleteShippingLogs(defaultDate);
+
   // Check if shipItems is undefined or null
   if (isLoading) {
     return (
@@ -51,24 +62,54 @@ const ShipLogs = () => {
   );
 
   const onClear = () => {
-    Alert.alert(
-      "Clear Shipping Logs",
-      "Are you sure to clear all shipping logs?",
-      [
-        {
-          text: "No",
-        },
+    if (itemLogsFilter && itemLogsFilter.length > 0) {
+      if (search === "") {
+        Alert.alert(
+          "Clear Shipping Logs",
+          "Are you sure to clear all shipping logs?",
+          [
+            {
+              text: "No",
+            },
 
-        {
-          text: "Yes",
+            {
+              text: "Yes",
 
-          onPress: () => mutateAsync(),
-        },
-      ],
-      {
-        cancelable: true,
+              onPress: () => {
+           
+                mutateAsync();
+              },
+            },
+          ],
+          {
+            cancelable: true,
+          }
+        );
+      } else {
+        Alert.alert(
+          "Clear Shipping Logs",
+          ` Are you sure to clear ${itemLogsFilter.length} shipping logs?`,
+          [
+            {
+              text: "No",
+            },
+
+            {
+              text: "Yes",
+
+              onPress: () => {
+                mutateAsync();
+              },
+            },
+          ],
+          {
+            cancelable: true,
+          }
+        );
       }
-    );
+    } else {
+      Alert.alert("Date Empty", "No items found in the selected date range.");
+    }
   };
 
   const formatDate = (timestamp: string) => {
@@ -96,29 +137,55 @@ const ShipLogs = () => {
       </View>
     );
   }
-
+  // calendar filter
   const calendarFilter = (text: string | null) => {
-    if (text) {
-      const filtered = shipItems.filter((item: ShippingItem) => {
-        const itemDate = moment(item.createdAt).format("MMMM DD, YYYY");
+   
+   try {
+    if(text !== null || text !== undefined && text !== "") {
+      if (text!.length>1) {
+        console.log("text", text==="");
+        const filtered = shipItems.filter((item: ShippingItem) => {
+          const itemDate = moment(item.createdAt).format("MMMM DD, YYYY");
+  
+          if (itemDate === selected) {
+            return item;
+          }
+        });
+  
+        setSearch(text!);
+        setItemLogsFilter(filtered);
+  
+        const defaultFormat = moment(text, "MMMM DD, YYYY").format("YYYY-M-DD");
+        console.log("asdsadsa",defaultFormat)
+        setDefaultDate(defaultFormat.toString());
+      } else {
+        setSearch("");
+        setItemLogsFilter(shipItems);
+      }
+  
 
-        if (itemDate === selected) {
-          return item;
-        }
-      });
-      setSearch(text);
-      setItemLogsFilter(filtered);
-    } else {
-      setSearch("");
+    }
+    
+ 
+
+   }catch(error){
+    console.log(error)
+
+   } 
+  };
+
+  React.useEffect(() => {
+    if (search === null) {
       setItemLogsFilter(shipItems);
     }
-  };
+  }, [search]);
 
   React.useEffect(() => {
     if (shipItems && !shipItems.isLoading) {
       setItemLogsFilter(shipItems);
     }
   }, [shipItems.isLoading, shipItems]);
+
   React.useEffect(() => {
     calendarFilter(selected);
   }, [selected]);
@@ -134,6 +201,7 @@ const ShipLogs = () => {
             placeholder="Filter ship logs using date."
             onChangeText={(text) => calendarFilter(text)}
             value={search}
+            onFocus={() => setItemLogsFilter(shipItems)}
           ></DateInput>
 
           <CalendarButton>

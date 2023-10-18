@@ -17,12 +17,15 @@ export const useGetShipping = () => {
   });
 };
 
-export const useDeleteShippingLogs = () => {
+export const useDeleteShippingLogs = (date: string) => {
+
+
   const navigation = useNavigation();
   return useMutation({
     mutationFn: async () => {
       const res = await axios.delete(
-        `http://192.168.110.110:4000/inventoryapp/ship-items`
+        `http://192.168.110.110:4000/inventoryapp/ship-items`,
+        { data: { type: date === "" ? "all" : "filtered", date } }
       );
       return res.data;
     },
@@ -32,4 +35,6 @@ export const useDeleteShippingLogs = () => {
       console.log("test");
     },
   });
-};
+}
+
+
