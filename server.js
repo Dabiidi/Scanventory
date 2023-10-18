@@ -2,6 +2,7 @@
 const mongoose = require("mongoose");
 const bodyParser = require("body-parser");
 const express = require("express");
+const { invalid } = require("moment");
 
 const app = express();
 const PORT = 4000;
@@ -357,7 +358,7 @@ app.post("/inventoryapp/ship-items", async (req, res) => {
 });
 
 // Define a GET endpoint to retrieve ship items
-app.get("/inventoryapp/ship-items", async (req, res) => {
+app.get("/inventoryapp/ship-items/", async (req, res) => {
   try {
     // Use your ShipItem model to fetch ship items from the database
     const shipItems = await ShipItem.find().sort({ createdAt: "descending" }); // This assumes you have a ShipItem model
@@ -370,9 +371,36 @@ app.get("/inventoryapp/ship-items", async (req, res) => {
   }
 });
 app.delete("/inventoryapp/ship-items", async (req, res) => {
+  console.log(req.body)
+
   try {
-    await ShipItem.deleteMany({});
-    res.status(200).json({ message: "All shipping logs deleted successfully" });
+    if(req.body?.type === "all") {
+      await ShipItem.deleteMany({});
+      return res
+        .status(200)
+        .json({ message: "All shipping logs deleted successfully" });
+    }
+ else if (req.body?.type === "filtered") {
+      const searchDate = new Date(req.body.date);
+
+      const startOfDay = new Date(
+        searchDate.getFullYear(),
+        searchDate.getMonth(),
+        searchDate.getDate()
+      );
+
+      const endOfDay = new Date(startOfDay);
+      endOfDay.setDate(endOfDay.getDate() + 1);
+      const result = await ShipItem.deleteMany({
+        createdAt: { $gte: startOfDay, $lt: endOfDay },
+      });
+
+      res.status(200).json({ message: "Shipping Logs deleted successfully" });
+    }
+    else {
+      res.status(404).json({ message: "Error deleting shipping logs" });
+
+    }
   } catch (error) {
     console.error("Error deleting all shipping logs:", error);
     res.status(500).json({ message: "Error deleting shipping logs" });
