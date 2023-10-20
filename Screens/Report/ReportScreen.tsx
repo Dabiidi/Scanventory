@@ -62,7 +62,7 @@ const ReportScreen: React.FC = () => {
   return (
     <Container>
       <ClearButton onPress={onClear}>
-        <ButtonText>Clear Shipping Logs</ButtonText>
+        <ButtonText>Clear Inventory Logs</ButtonText>
       </ClearButton>
       <FlatList 
         data={data}

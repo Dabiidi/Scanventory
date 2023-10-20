@@ -197,9 +197,16 @@ const ShipLogs = () => {
           </ClearButton>
           <SearchFilter>
             <DateInput
+            
               clearTextOnFocus
               placeholder="Filter ship logs using date."
-              onChangeText={(text) => calendarFilter(text)}
+              onChangeText={(text) => {
+              
+                calendarFilter(text)}
+              
+              }
+
+                
               value={search}
               onFocus={() => setItemLogsFilter(shipItems)}
             ></DateInput>
