@@ -371,16 +371,13 @@ app.get("/inventoryapp/ship-items/", async (req, res) => {
   }
 });
 app.delete("/inventoryapp/ship-items", async (req, res) => {
-  console.log(req.body)
-
   try {
-    if(req.body?.type === "all") {
+    if (req.body?.type === "all") {
       await ShipItem.deleteMany({});
       return res
         .status(200)
         .json({ message: "All shipping logs deleted successfully" });
-    }
- else if (req.body?.type === "filtered") {
+    } else if (req.body?.type === "filtered") {
       const searchDate = new Date(req.body.date);
 
       const startOfDay = new Date(
@@ -396,10 +393,8 @@ app.delete("/inventoryapp/ship-items", async (req, res) => {
       });
 
       res.status(200).json({ message: "Shipping Logs deleted successfully" });
-    }
-    else {
+    } else {
       res.status(404).json({ message: "Error deleting shipping logs" });
-
     }
   } catch (error) {
     console.error("Error deleting all shipping logs:", error);

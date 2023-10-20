@@ -96,13 +96,21 @@ const AddQR = () => {
       Alert.alert("Error", "Please fill in all fields before submitting.");
       return;
     }
-    const capitalizedName = name.charAt(0).toUpperCase() + name.slice(1);
+    const capitalizedName = name.charAt(0).toUpperCase() + name.slice(1).toLowerCase();
+    console.log("capitalizedName", capitalizedName)
+    
     const nameExists = await loadingAsync(capitalizedName);
 
-    if (nameExists.exists !== false) {
-      // Check for existence and if exists is true
-      Alert.alert("Error", `Item ${capitalizedName} already exists.`);
-      return;
+
+  //  const existingName = nameExists.name.toUpperCase();
+  
+  //  const inputName = capitalizedName.toUpperCase();
+  
+  //   console.log("text",existingName)
+
+    if (nameExists.exists !== false ) {
+          Alert.alert("Error", `Item ${capitalizedName} is already Exists.`);
+          return;
     }
     Alert.alert(
       "Save Item",

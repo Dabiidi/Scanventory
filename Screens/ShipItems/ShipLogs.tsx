@@ -1,5 +1,12 @@
 import React, { useEffect } from "react";
-import { View, Text, FlatList, Alert } from "react-native";
+import {
+  View,
+  Text,
+  FlatList,
+  Alert,
+  TouchableWithoutFeedback,
+  Keyboard,
+} from "react-native";
 import {
   useGetShipping,
   useDeleteShippingLogs,
@@ -18,20 +25,18 @@ interface ShippingItem {
   createdAt: string;
 }
 
-interface DeleteItemsPayload {
-  ids: string[];
-}
-
 const ShipLogs = () => {
   const [selected, setSelected] = React.useState("");
   const [showCalendar, setShowCalendar] = React.useState(false);
-  const [defaultDate, setDefaultDate] = React.  useState(""); // Search data
+  const [defaultDate, setDefaultDate] = React.useState(""); // Search data
 
   const [search, setSearch] = React.useState(""); // Search data
   const { data: shipItems, isLoading, isError } = useGetShipping();
   const [itemLogsFilter, setItemLogsFilter] = React.useState<ShippingItem[]>(
     []
   );
+  const calendarRef = React.useRef(null);
+
   const {
     data,
     isError: Errorship,
@@ -56,10 +61,10 @@ const ShipLogs = () => {
   }
 
   // Calculate total sales by summing up the 'total' property of all items
-  const totalSales = shipItems.reduce(
-    (total: any, item: any) => total + item.total,
-    0
-  );
+
+  const hideCalendar = () => {
+    setShowCalendar(false);
+  };
 
   const onClear = () => {
     if (itemLogsFilter && itemLogsFilter.length > 0) {
@@ -76,7 +81,6 @@ const ShipLogs = () => {
               text: "Yes",
 
               onPress: () => {
-           
                 mutateAsync();
               },
             },
@@ -139,39 +143,34 @@ const ShipLogs = () => {
   }
   // calendar filter
   const calendarFilter = (text: string | null) => {
-   
-   try {
-    if(text !== null || text !== undefined && text !== "") {
-      if (text!.length>1) {
-        console.log("text", text==="");
-        const filtered = shipItems.filter((item: ShippingItem) => {
-          const itemDate = moment(item.createdAt).format("MMMM DD, YYYY");
-  
-          if (itemDate === selected) {
-            return item;
-          }
-        });
-  
-        setSearch(text!);
-        setItemLogsFilter(filtered);
-  
-        const defaultFormat = moment(text, "MMMM DD, YYYY").format("YYYY-M-DD");
-        console.log("asdsadsa",defaultFormat)
-        setDefaultDate(defaultFormat.toString());
-      } else {
-        setSearch("");
-        setItemLogsFilter(shipItems);
+    try {
+      if (text !== null || (text !== undefined && text !== "")) {
+        if (text!.length > 1) {
+          console.log("text", text === "");
+          const filtered = shipItems.filter((item: ShippingItem) => {
+            const itemDate = moment(item.createdAt).format("MMMM DD, YYYY");
+
+            if (itemDate === selected) {
+              return item;
+            }
+          });
+
+          setSearch(text!);
+          setItemLogsFilter(filtered);
+
+          const defaultFormat = moment(text, "MMMM DD, YYYY").format(
+            "YYYY-M-DD"
+          );
+          console.log("asdsadsa", defaultFormat);
+          setDefaultDate(defaultFormat.toString());
+        } else {
+          setSearch("");
+          setItemLogsFilter(shipItems);
+        }
       }
-  
-
+    } catch (error) {
+      console.log(error);
     }
-    
- 
-
-   }catch(error){
-    console.log(error)
-
-   } 
   };
 
   React.useEffect(() => {
@@ -191,65 +190,74 @@ const ShipLogs = () => {
   }, [selected]);
   return (
     <>
-      <MainContaier>
-        <ClearButton onPress={onClear}>
-          <ButtonText>Clear Shipping Logs</ButtonText>
-        </ClearButton>
-        <SearchFilter>
-          <DateInput
-            clearTextOnFocus
-            placeholder="Filter ship logs using date."
-            onChangeText={(text) => calendarFilter(text)}
-            value={search}
-            onFocus={() => setItemLogsFilter(shipItems)}
-          ></DateInput>
+      <TouchableWithoutFeedback onPress={hideCalendar}>
+        <MainContaier>
+          <ClearButton onPress={onClear}>
+            <ButtonText>Clear Shipping Logs</ButtonText>
+          </ClearButton>
+          <SearchFilter>
+            <DateInput
+            
+              clearTextOnFocus
+              placeholder="Filter ship logs using date."
+              onChangeText={(text) => {
+              
+                calendarFilter(text)}
+              
+              }
 
-          <CalendarButton>
-            <AntDesign
-              onPress={() => setShowCalendar(!showCalendar)}
-              name="calendar"
-              size={40}
-              color="black"
-            />
-          </CalendarButton>
-        </SearchFilter>
-        {showCalendar && (
-          <FloatingCalendar>
-            <Calendar
-              style={{
-                height: 300,
-                width: 300,
-              }}
-              enableSwipeMonths
-              onDayPress={(day) => {
-                setSelected(formatDate(day.dateString));
-                calendarFilter(selected);
-              }}
-              markedDates={{
-                [selected]: {
-                  selected: true,
-                  disableTouchEvent: true,
-                  selectedColor: "orange",
-                },
-              }}
-            />
-          </FloatingCalendar>
-        )}
+                
+              value={search}
+              onFocus={() => setItemLogsFilter(shipItems)}
+            ></DateInput>
 
-        <FlatList
-          data={itemLogsFilter}
-          keyExtractor={(item) => item._id}
-          renderItem={({ item }) => (
-            <Container>
-              <Name>Item Name: {item.name}</Name>
-              <InfoText>Quantity To Ship: {item.quantityToShip}</InfoText>
-              <InfoText>Total Sales: ₱{item.total}</InfoText>
-              <InfoText>Destination: {item.destination}</InfoText>
-              <InfoText>Shipped Date: {formatDate(item.createdAt)}</InfoText>
-            </Container>
+            <CalendarButton>
+              <AntDesign
+                onPress={() => setShowCalendar(!showCalendar)}
+                name="calendar"
+                size={40}
+                color="black"
+              />
+            </CalendarButton>
+          </SearchFilter>
+          {showCalendar && (
+            <FloatingCalendar>
+              <Calendar
+                style={{
+                  height: 300,
+                  width: 300,
+                }}
+                enableSwipeMonths
+                onDayPress={(day) => {
+                  setSelected(formatDate(day.dateString));
+                  calendarFilter(selected);
+                }}
+                markedDates={{
+                  [selected]: {
+                    selected: true,
+                    disableTouchEvent: true,
+                    selectedColor: "orange",
+                  },
+                }}
+              />
+            </FloatingCalendar>
           )}
-        />
-      </MainContaier>
+
+          <FlatList
+            data={itemLogsFilter}
+            keyExtractor={(item) => item._id}
+            renderItem={({ item }) => (
+              <Container>
+                <Name>Item Name: {item.name}</Name>
+                <InfoText>Quantity To Ship: {item.quantityToShip}</InfoText>
+                <InfoText>Total Sales: ₱{item.total}</InfoText>
+                <InfoText>Destination: {item.destination}</InfoText>
+                <InfoText>Shipped Date: {formatDate(item.createdAt)}</InfoText>
+              </Container>
+            )}
+          />
+        </MainContaier>
+      </TouchableWithoutFeedback>
     </>
   );
 };
@@ -285,7 +293,7 @@ const FloatingCalendar = styled.View`
   top: 110px;
   left: 20px;
   z-index: 1;
-  background-color: white;
+
   border-radius: 8px;
   padding: 10px;
 `;

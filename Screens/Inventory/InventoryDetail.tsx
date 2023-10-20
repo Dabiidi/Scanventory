@@ -301,7 +301,7 @@ const InventoryDetail: React.FC<Props> = ({ route }: Props) => {
     "Balls",
   ];
 
-  const { mutateAsync } = useDeleteInventory(
+  const { mutateAsync, isLoading:deleteLoading } = useDeleteInventory(
     editedInventory._id,
     editedInventory.name
   );

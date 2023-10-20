@@ -43,7 +43,7 @@ import { ClassPicker } from "../components/ClassificationPicker";
 const AddItemScreen = () => {
   const [name, setName] = React.useState<string>("");
   const [quantity, setQuantity] = React.useState<number>(0);
-  const [price, setPrice] = React.useState<number>(0.00);
+  const [price, setPrice] = React.useState<number>(0.0);
   const [desc, setDesc] = React.useState<string>("");
   const navigation = useNavigation();
   const [classification, setClassification] = React.useState<string | null>(
@@ -67,14 +67,17 @@ const AddItemScreen = () => {
       return;
     }
     const capitalizedName = name.charAt(0).toUpperCase() + name.slice(1);
-    const nameExists = await loadingAsync(capitalizedName);
-
-    if (nameExists.exists !== false) {
-      Alert.alert("Error", `Item ${name} is already Exists.`);
-      return;
-    }
-    setLoadingSubmit(true);
     try {
+      const nameExists = await loadingAsync(capitalizedName);
+
+      if (nameExists.exists !== false) {
+        if (nameExists.toUpperCase() === capitalizedName.toUpperCase) {
+          Alert.alert("Error", `Item ${name} is already Exists.`);
+          return;
+        }
+      }
+      setLoadingSubmit(true);
+
       await mutateAsync({
         name: capitalizedName,
         quantity,
@@ -105,10 +108,9 @@ const AddItemScreen = () => {
 
   const formatter = (text: any) => {
     const formattedPrice = parseFloat(text.replace(/[^0-9.]/g, "")).toFixed(2);
-    console.log(formattedPrice);
     setPrice(parseFloat(formattedPrice));
   };
-  
+
   const handleCancel = () => {
     if (name || quantity || price || desc || classification) {
       Alert.alert(
@@ -195,7 +197,7 @@ const AddItemScreen = () => {
             <InputTexts>Name</InputTexts>
             <Input
               placeholder="Item Name"
-              placeholderTextColor={"white"}
+              placeholderTextColor={"gray"}
               autoCapitalize="words"
               onChangeText={(text) => setName(text)}
               value={name}
@@ -204,7 +206,7 @@ const AddItemScreen = () => {
             <InputTexts>Price</InputTexts>
             <Input
               placeholder="Price"
-              placeholderTextColor={"black"}
+              placeholderTextColor={"gray"}
               onChangeText={(text) => {
                 formatter(text);
               }}
@@ -214,7 +216,7 @@ const AddItemScreen = () => {
             <InputTexts>Description</InputTexts>
             <Input
               placeholder="Description"
-              placeholderTextColor={"white"}
+              placeholderTextColor={"gray"}
               autoCapitalize="words"
               onChangeText={(text) => setDesc(text)}
               value={desc}
@@ -223,7 +225,7 @@ const AddItemScreen = () => {
             <QuantityContainer>
               <InputQuantity
                 placeholder="0"
-                placeholderTextColor={"black"}
+                placeholderTextColor={"gray"}
                 onChangeText={(text) => setQuantity(parseInt(text))}
                 value={quantity ? quantity.toString() : ""}
                 keyboardType="numeric"
