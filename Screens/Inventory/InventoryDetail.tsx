@@ -86,7 +86,9 @@ const InventoryDetail: React.FC<Props> = ({ route }: Props) => {
   const [editableField, setEditableField] = useState<string | null>(null);
   const [changesMade, setChangesMade] = useState<string>();
   const queryClient = useQueryClient();
-  const [selectedClassification, setSelectedClassification] =useState<string | null>(null)
+  const [selectedClassification, setSelectedClassification] = useState<
+    string | null
+  >(null);
 
   const { isLoading, mutateAsync: mutateLogs } = saveLogs();
   const { data: DataInvent } = useGetItems();
@@ -301,7 +303,7 @@ const InventoryDetail: React.FC<Props> = ({ route }: Props) => {
     "Balls",
   ];
 
-  const { mutateAsync, isLoading:deleteLoading } = useDeleteInventory(
+  const { mutateAsync, isLoading: deleteLoading } = useDeleteInventory(
     editedInventory._id,
     editedInventory.name
   );
@@ -326,8 +328,8 @@ const InventoryDetail: React.FC<Props> = ({ route }: Props) => {
       }
     );
   };
-  const handleSelection = (option : any) => {
-    console.log("gasfsa", option)
+  const handleSelection = (option: any) => {
+    console.log("gasfsa", option);
     setSelectedClassification(option.label);
     handleInputChange("classification", option.label);
     // Do something with the selected option
@@ -473,9 +475,11 @@ const InventoryDetail: React.FC<Props> = ({ route }: Props) => {
                       key: option,
                       label: option,
                     }))}
-                    initValue={selectedClassification || editedInventory.classification}
+                    initValue={
+                      selectedClassification || editedInventory.classification
+                    }
                     onChange={(option) => {
-                      handleSelection(option)
+                      handleSelection(option);
                     }}
                     cancelText="Cancel" // Set the default cancel text here
                     optionTextStyle={{ color: "black" }} // Style for the options
@@ -483,7 +487,6 @@ const InventoryDetail: React.FC<Props> = ({ route }: Props) => {
                     cancelTextStyle={{ color: "red", fontWeight: "bold" }} // Style for the cancel button text
                     overlayStyle={{ backgroundColor: "rgba(0,0,0,0.7)" }} // Style for the overlay
                   />
-                  
                 </PickerContainerIOS>
               ) : (
                 <Classification
@@ -505,10 +508,6 @@ const InventoryDetail: React.FC<Props> = ({ route }: Props) => {
                     selectedValue={editedInventory.classification}
                     onValueChange={(value) =>
                       handleInputChange("classification", value)
-
-
-
-                      
                     }
                     style={{
                       color: "#fff",
